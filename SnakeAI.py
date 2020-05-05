@@ -10,8 +10,6 @@ class AI:
         self.theta_1 = np.zeros((7, 11))
         self.theta_2 = np.zeros((7, 8))
         self.theta_3 = np.zeros((4, 8))
-        self.reproduce = 0.5
-        self.die = 0.5
 
     def decide(self, v_snake) -> str:
         """
@@ -88,6 +86,45 @@ class AI:
         newAI.theta_2 = np.copy(self.theta_2)
         newAI.theta_3 = np.copy(self.theta_3)
         return newAI
+
+    def mutate(self, epsilon):
+        """
+        Randomly chooses one of the layers and adds noise based on a
+        uniform distribution Uniform(-epsilon, epsilon).
+        """
+        n_random = randint(0, 2)
+
+        if n_random == 0:
+            self.theta_1 += (np.random.rand(7, 11) * 2 * epsilon) - epsilon
+
+        elif n_random == 1:
+            self.theta_2 += (np.random.rand(7, 8) * 2 * epsilon) - epsilon
+
+        else:
+            assert n_random == 2
+            self.theta_3 += (np.random.rand(4, 8) * 2 * epsilon) - epsilon
+
+    def random(self, epsilon):
+        """
+        Initialize the layers randomly with distribution
+        Uniform(-epsilon, epsilon)
+        """
+        self.theta_1 = np.random.rand(7, 11) * 2 * epsilon - epsilon
+        self.theta_2 = np.random.rand(7, 8) * 2 * epsilon - epsilon
+        self.theta_3 = np.random.rand(4, 8) * 2 * epsilon - epsilon
+
+    def genetic_weight(self):
+        """
+        Returns the genetic weight of this AI. This is the sum of all the
+        elements in each matrix multiplied by a coefficient.
+        The larger the genetic weight the worse the AI is.
+        """
+
+        sum = np.square(self.theta_1).sum() + np.square(self.theta_2).sum() +\
+              np.square(self.theta_3).sum()
+
+        return sum * 0.01
+
 
 
 @ np.vectorize

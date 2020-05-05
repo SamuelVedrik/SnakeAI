@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import random
 import numpy as np
+import generated_game
 import SnakeAI
 import os
 
@@ -209,6 +210,21 @@ class TrainingSnake(Snake):
         self._check()
         self._update_score()
 
+class SetTrainingSnake(TrainingSnake):
+
+    def __init__(self, AI):
+        self._curr_nugget = 0
+        TrainingSnake.__init__(self, AI)
+
+    def _set_nugget(self):
+
+        self._nugget = generated_game.nuggets[self._curr_nugget]
+        self._curr_nugget += 1
+        self._curr_nugget %= 100
+
+        if self._nugget in self._currsnake:
+            self._set_nugget()
+
 
 class RenderSnake(TrainingSnake):
 
@@ -279,6 +295,21 @@ class RenderSnake(TrainingSnake):
         nuggetX, nuggetY = self._nugget
         self._gameboard[nuggetY][nuggetX].config(background="red")
 
+class SetRenderSnake(RenderSnake):
+
+    def __init__(self, root, AI):
+
+        self._curr_nugget = 0
+        RenderSnake.__init__(self, root, AI)
+
+    def _set_nugget(self):
+
+        self._nugget = generated_game.nuggets[self._curr_nugget]
+        self._curr_nugget += 1
+        self._curr_nugget %= 100
+
+        if self._nugget in self._currsnake:
+            self._set_nugget()
 
 class PlayableSnake(RenderSnake):
 
@@ -310,10 +341,15 @@ class PlayableSnake(RenderSnake):
 if __name__ == "__main__":
 
     AI = SnakeAI.AI()
-    AI_PATH = os.getcwd() + "/AI_1.csv"
+    AI_PATH = "AI_2.csv"
     AI.load(AI_PATH)
 
     root = tk.Tk()
     game = RenderSnake(root, AI)
     game.play()
     root.mainloop()
+
+    # root = tk.Tk()
+    # game = PlayableSnake(root)
+    # game.play()
+    # root.mainloop()
